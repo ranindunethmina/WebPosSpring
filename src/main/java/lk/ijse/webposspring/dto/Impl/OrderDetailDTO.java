@@ -1,15 +1,14 @@
-package lk.ijse.webposspring.dto;
+package lk.ijse.webposspring.dto.Impl;
 
+import lk.ijse.webposspring.dto.SuperDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class OrderDetailDTO implements Serializable {
+public class OrderDetailDTO implements SuperDTO {
     private String orderId;
     private String itemId;
     private int quantity;

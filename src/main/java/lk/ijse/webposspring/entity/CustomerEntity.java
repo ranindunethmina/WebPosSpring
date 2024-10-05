@@ -7,14 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "customer")
-public class CustomerEntity implements Serializable {
+public class CustomerEntity implements SuperEntity {
     @Id
     private String customerId;
     private String firstName;

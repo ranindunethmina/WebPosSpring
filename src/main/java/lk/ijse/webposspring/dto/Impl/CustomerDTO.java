@@ -1,15 +1,15 @@
-package lk.ijse.webposspring.dto;
+package lk.ijse.webposspring.dto.Impl;
 
+import lk.ijse.webposspring.customObj.CustomerResponse;
+import lk.ijse.webposspring.dto.SuperDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerDTO implements Serializable {
+public class CustomerDTO implements SuperDTO, CustomerResponse {
     private String customerId;
     private String firstName;
     private String address;

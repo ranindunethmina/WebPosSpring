@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "order")
-public class OrderEntity implements Serializable {
+public class OrderEntity implements SuperEntity {
     @Id
     private String orderId;
     private LocalDateTime dateAndTime;

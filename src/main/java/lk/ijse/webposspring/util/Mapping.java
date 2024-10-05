@@ -1,6 +1,6 @@
 package lk.ijse.webposspring.util;
 
-import lk.ijse.webposspring.dto.CustomerDTO;
+import lk.ijse.webposspring.dto.Impl.CustomerDTO;
 import lk.ijse.webposspring.entity.CustomerEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ public class Mapping {
     @Autowired
     private ModelMapper modelMapper;
 
-    //matters of NoteEntity and DTO
+    //matters of CustomerEntity and DTO
     public CustomerDTO convertToDTO(CustomerEntity customer) {
         return modelMapper.map(customer, CustomerDTO.class);
     }
