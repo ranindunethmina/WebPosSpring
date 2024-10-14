@@ -1,11 +1,11 @@
 package lk.ijse.webposspring.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +19,10 @@ public class ItemEntity implements SuperEntity {
     private double price;
     private int quantity;
     private String category;
+    @Column(columnDefinition = "LONGTEXT")
     private String imagePath;
+
+    @OneToMany(mappedBy = "item")
+    private List<OrderDetail> orderDetails = new ArrayList<>();
+
 }

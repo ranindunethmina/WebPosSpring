@@ -3,6 +3,7 @@ package lk.ijse.webposspring.util;
 import lk.ijse.webposspring.dto.Impl.CustomerDTO;
 import lk.ijse.webposspring.entity.CustomerEntity;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,6 @@ public class Mapping {
     }
 
     public List<CustomerDTO> convertToDTO(List<CustomerEntity> customers) {
-        return modelMapper.map(customers, List.class);
+        return modelMapper.map(customers, new TypeToken<List<CustomerDTO>>() {}.getType());
     }
 }

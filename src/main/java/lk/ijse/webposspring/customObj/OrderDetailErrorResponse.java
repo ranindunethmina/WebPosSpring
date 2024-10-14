@@ -9,7 +9,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CustomerErrorResponse implements Serializable, CustomerResponse{
+public class OrderDetailErrorResponse implements Serializable, OrderDetailResponse{
     private int errorCode;
     public String errorMessage;
 }
