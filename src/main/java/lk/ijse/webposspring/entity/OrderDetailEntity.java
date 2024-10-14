@@ -12,17 +12,16 @@ import lombok.NoArgsConstructor;
 @Table(name = "orderDetail")
 public class OrderDetailEntity implements SuperEntity {
     @Id
-    private String orderId;
-    private String itemId;
+//    private String orderId;
+//    private String itemId;
     private int quantity;
     private double untPrice;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
-    private Order order;
+    private OrderEntity order;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
-    private Item item;
-
+    private ItemEntity item;
 }

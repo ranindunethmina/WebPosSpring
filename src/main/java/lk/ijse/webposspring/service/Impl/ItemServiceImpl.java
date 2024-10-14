@@ -26,7 +26,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void updateItem(String itemId, ItemDTO itemDTO) {
+    public void updateItem(ItemDTO itemDTO) {
 
     }
 

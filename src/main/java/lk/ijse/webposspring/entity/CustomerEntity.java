@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +20,5 @@ public class CustomerEntity implements SuperEntity {
     private String mobile;
 
     @OneToMany(mappedBy = "customer")
-    private List<Order> orders = new ArrayList<>();
-
+    private List<OrderEntity> orders;
 }

@@ -69,6 +69,7 @@ public class CustomerController {
     public List<CustomerDTO> getAllCustomer(){
         return customerService.getAllCustomers();
     }
+
     @GetMapping(value = "/{custId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CustomerResponse getCustomer(@PathVariable ("custId") String custId){
         if(custId.isEmpty() || custId == null){
@@ -76,5 +77,4 @@ public class CustomerController {
         }
         return customerService.getCustomer(custId);
     }
-
 }
