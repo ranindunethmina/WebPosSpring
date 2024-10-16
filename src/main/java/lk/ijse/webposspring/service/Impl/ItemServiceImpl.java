@@ -58,12 +58,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemResponse getItem(String itemId) {
-        if (itemDao.existsById(itemId)) {
-            Item itemEntityByItemId = itemDao.getItemEntitiesByItemId(itemId);
-            return mapping.convertToItemDTO(itemEntityByItemId);
-        }else {
-            return new ItemErrorResponse(0,"Item not found");
-        }
+        return null;
+//        if (itemDao.existsById(itemId)) {
+//            Item itemEntityByItemId = itemDao.findById(itemId);
+//            return mapping.convertToItemDTO(itemEntityByItemId);
+//        }else {
+//            return new ItemErrorResponse(0,"Item not found");
+//        }
     }
 
     @Override

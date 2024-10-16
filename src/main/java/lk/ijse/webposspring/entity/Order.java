@@ -6,26 +6,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "`order`")
-public class Order implements SuperEntity {
+public class Order{
     @Id
     private String orderId;
-    private LocalDateTime dateAndTime;
-//    private String customerId;
-    private double subtotal;
+    private LocalDateTime orderTimeAndDate;
+    private double subTotal;
     private double discount;
-    private double amount_payed;
+    private double amountPayed;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customerId")
     private Customer customer;
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderDetails> orderDetails;
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderDetails> orderDetails = new HashSet<>();
 }

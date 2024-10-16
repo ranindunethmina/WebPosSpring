@@ -22,10 +22,8 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
-    @Autowired
     private final CustomerDao customerDao;
 
-    @Autowired
     private final Mapping mapping;
 
     @Override

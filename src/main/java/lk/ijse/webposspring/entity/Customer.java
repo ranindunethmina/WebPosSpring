@@ -12,13 +12,14 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "customer")
-public class Customer implements SuperEntity {
+public class Customer{
     @Id
     private String customerId;
     private String firstName;
     private String address;
     private String mobile;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
+
 }

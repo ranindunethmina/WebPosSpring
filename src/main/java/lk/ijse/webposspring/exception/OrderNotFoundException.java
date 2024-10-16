@@ -1,10 +1,12 @@
 package lk.ijse.webposspring.exception;
 
 public class OrderNotFoundException extends RuntimeException {
-    public OrderNotFoundException() {}
+    public OrderNotFoundException(String message) {
+        super(message);
+    }
 
-    public OrderNotFoundException(String message) {}
-
-    public OrderNotFoundException(String message, Throwable cause) {}
+    public OrderNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

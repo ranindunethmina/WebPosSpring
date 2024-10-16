@@ -5,23 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "item")
-public class Item implements SuperEntity {
+public class Item{
     @Id
     private String itemId;
     private String itemName;
     private double price;
     private int quantity;
     private String category;
-    @Column(columnDefinition = "LONGTEXT")
     private String imagePath;
 
-    @OneToMany(mappedBy = "item")
-    private List<OrderDetails> orderDetails;
+    @OneToMany(mappedBy = "items")
+    private Set<OrderDetails> orderDetails;
 }

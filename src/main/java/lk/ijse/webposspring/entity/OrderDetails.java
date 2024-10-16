@@ -5,23 +5,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "orderDetail")
-public class OrderDetails implements SuperEntity {
-    @Id
-//    private String orderId;
-//    private String itemId;
+public class OrderDetails implements Serializable {
+    @EmbeddedId
+    private OrderDetailsId orderDetailsId;
+
+    @ManyToOne
+    @MapsId("orderId")
+    @JoinColumn(name = "orders_Id")
+    private Order orders;
+
+    @ManyToOne
+    @MapsId("itemId")
+    @JoinColumn(name = "item_Id")
+    private Item items;
+
     private int quantity;
-    private double untPrice;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
-
-    @ManyToOne
-    @JoinColumn(name = "item_id")
-    private Item item;
+    private double unitPrice;
 }
