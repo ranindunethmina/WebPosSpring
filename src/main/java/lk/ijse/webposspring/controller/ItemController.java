@@ -1,14 +1,12 @@
 package lk.ijse.webposspring.controller;
 
-import lk.ijse.webposspring.customObj.ItemResponse;
 import lk.ijse.webposspring.dto.ItemDTO;
 import lk.ijse.webposspring.exception.DataPersistFailedException;
+import lk.ijse.webposspring.exception.ItemNotFoundException;
 import lk.ijse.webposspring.service.ItemService;
-import lk.ijse.webposspring.util.AppUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,96 +18,109 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/item")
 @RequiredArgsConstructor
-@CrossOrigin
+@CrossOrigin("*")
 public class ItemController {
-    @Autowired
-    private ItemService itemService;
+    private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
-    Logger logger = LoggerFactory.getLogger(ItemController.class);
+    private final ItemService itemService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> saveItem(
-            @RequestPart("itemId") String itemId,
+            @RequestPart("itemId") String item,
             @RequestPart("itemName") String itemName,
-            @RequestPart("price") double price,
-            @RequestPart("quantity") int quantity,
+            @RequestPart("price") String price,
+            @RequestPart("quantity") String quantity,
             @RequestPart("category") String category,
-            @RequestPart("imagePath") MultipartFile imagePath) {
-        logger.info("Request to save customer.");
-
-        try{
-            byte[] imageByteCollection = imagePath.getBytes();
-            String base64ProfilePic = AppUtil.toBase64ProfilePic(imageByteCollection);
-
-            ItemDTO buildItemDTO = new ItemDTO();
-            buildItemDTO.setItemId(itemId);
-            buildItemDTO.setItemName(itemName);
-            buildItemDTO.setPrice(price);
-            buildItemDTO.setQuantity(quantity);
-            buildItemDTO.setCategory(category);
-            buildItemDTO.setImagePath(base64ProfilePic);
-
-            itemService.saveItem(buildItemDTO);
-            logger.info("Successfully saved item: {}", buildItemDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            @RequestPart("image") MultipartFile image
+    ) {
+        logger.info("Received request to save item: {}", item);
+        try {
+            ItemDTO<MultipartFile> itemDTO = new ItemDTO<>(item, itemName, Double.parseDouble(price), Integer.parseInt(quantity), category, image);
+            itemService.saveItem(itemDTO);
+            logger.info("Item saved successfully: {}", item);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (DataPersistFailedException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Failed to persist item data: {}", item, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            logger.error("Unexpected error while saving item: {}", item, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable("id") String itemId) {
-        logger.info("Request to delete item {}", itemId);
+    @PatchMapping(path = "/{itemId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateItem(@PathVariable("itemId") String itemId,
+                                           @RequestPart("itemName") String itemName,
+                                           @RequestPart("price") String price,
+                                           @RequestPart("quantity") String quantity,
+                                           @RequestPart("category") String category,
+                                           @RequestPart("image") MultipartFile image
+    ) {
+        logger.info("Received request to update item: {}", itemId);
         try {
-            itemService.deleteItem(itemId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            ItemDTO<MultipartFile> itemDTO = new ItemDTO<>(itemId, itemName, Double.parseDouble(price), Integer.parseInt(quantity), category, image);
+            itemService.updateItem(itemId, itemDTO);
+            logger.info("Item updated successfully: {}", itemId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (ItemNotFoundException e) {
+            logger.warn("Item not found for update : {}", itemId);
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (DataPersistFailedException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            logger.error("Failed to persist updated item data: {}", itemId, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Unexpected error while updating item: {}", itemId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemResponse getItem(@PathVariable("id") String itemId) {
-        logger.info("Request to get item {}", itemId);
-        return itemService.getItem(itemId);
+    @DeleteMapping(path = "/{itemId}")
+    public ResponseEntity<Void> deleteItem(@PathVariable("itemId") String itemId) {
+        logger.info("Received request to delete item: {}", itemId);
+        if (itemId == null) {
+            logger.warn("Received null itemId for deletion");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } else {
+            try {
+                itemService.deleteItem(itemId);
+                logger.info("Item deleted successfully: {}", itemId);
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            } catch (ItemNotFoundException e) {
+                logger.warn("Item not found for deletion: {}", itemId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            } catch (Exception e) {
+                logger.error("Unexpected error while deleting item: {}", itemId, e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        }
     }
 
-    @GetMapping(value = "allItems", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemDTO> getAllItems() {
-        logger.info("Request to get all items");
-        return itemService.getAllItems();
-    }
-
-    @PatchMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateItem(
-            @RequestPart("updateItemId") String updateItemId,
-            @RequestPart("updateItemName") String updateItemName,
-            @RequestPart("updatePrice") double updatePrice,
-            @RequestPart("updateQuantity") int updateQuantity,
-            @RequestPart("updateCategory") String updateCategory,
-            @RequestPart("updateImagePath") MultipartFile updateImagePath) {
+    @GetMapping(path = "/{itemId}")
+    public ResponseEntity<ItemDTO<String>> searchItem(@PathVariable("itemId") String itemId) {
+        logger.info("Received request to search item: {}", itemId);
         try {
-            byte[] imageByteCollection = updateImagePath.getBytes();
-            String base64ProfilePic = AppUtil.toBase64ProfilePic(imageByteCollection);
-
-            var updateDTO = new ItemDTO();
-            updateDTO.setItemId(updateItemId);
-            updateDTO.setItemName(updateItemName);
-            updateDTO.setPrice(updatePrice);
-            updateDTO.setQuantity(updateQuantity);
-            updateDTO.setCategory(updateCategory);
-            updateDTO.setImagePath(base64ProfilePic);
-
-            itemService.updateItem(updateDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (DataPersistFailedException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            ItemDTO<String> itemDTO = itemService.getItem(itemId);
+            logger.info("Item found: {}", itemId);
+            return ResponseEntity.ok(itemDTO);
+        } catch (ItemNotFoundException e) {
+            logger.warn("Item not found: {}", itemId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error("Unexpected error while searching for item: {}", itemId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ItemDTO<String>>> getAllItems() {
+        logger.info("Received request to get all items");
+        try {
+            List<ItemDTO<String>> items = itemService.getAllItems();
+            logger.info("Retrieved {} items", items.size());
+            return ResponseEntity.ok(items);
+        } catch (Exception e) {
+            logger.error("Unexpected error while retrieving all items", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

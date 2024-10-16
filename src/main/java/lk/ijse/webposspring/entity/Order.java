@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -18,15 +17,15 @@ import java.util.Set;
 public class Order{
     @Id
     private String orderId;
-    private LocalDateTime orderTimeAndDate;
-    private double subTotal;
+    private LocalDateTime dateAndTime;
+    private double subtotal;
     private double discount;
-    private double amountPayed;
+    private double amount_payed;
 
     @ManyToOne
     @JoinColumn(name = "customerId")
     private Customer customer;
 
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OrderDetails> orderDetails = new HashSet<>();
+    private Set<OrderDetail> orderDetails = new HashSet<>();
 }

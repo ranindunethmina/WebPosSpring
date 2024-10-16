@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "orderDetail")
-public class OrderDetails implements Serializable {
+public class OrderDetail implements Serializable {
     @EmbeddedId
     private OrderDetailsId orderDetailsId;
 

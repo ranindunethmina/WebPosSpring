@@ -1,9 +1,9 @@
-package lk.ijse.webposspring.dao;
+package lk.ijse.webposspring.repository;
 
 import lk.ijse.webposspring.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CustomerDao extends JpaRepository <Customer, String> {
+public interface CustomerRepository extends JpaRepository <Customer, String> {
 }

@@ -22,5 +22,5 @@ public class Item{
     private String imagePath;
 
     @OneToMany(mappedBy = "items")
-    private Set<OrderDetails> orderDetails;
+    private Set<OrderDetail> orderDetails;
 }

@@ -1,8 +1,7 @@
 package lk.ijse.webposspring.controller;
 
-import lk.ijse.webposspring.customObj.Impl.CustomerErrorResponse;
-import lk.ijse.webposspring.customObj.CustomerResponse;
 import lk.ijse.webposspring.dto.CustomerDTO;
+import lk.ijse.webposspring.exception.CustomerAlreadyExistsException;
 import lk.ijse.webposspring.exception.CustomerNotFoundException;
 import lk.ijse.webposspring.exception.DataPersistFailedException;
 import lk.ijse.webposspring.service.CustomerService;
@@ -28,41 +27,44 @@ public class CustomerController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveCustomer(@RequestBody CustomerDTO customerDTO){
         logger.info("Received request to save customer: {}", customerDTO);
-        if(customerDTO == null){
+        if (customerDTO == null) {
             logger.warn("Received null CustomerDTO");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } else {
             try {
                 customerService.saveCustomer(customerDTO);
                 logger.info("Customer saved successfully: {}", customerDTO.getCustomerId());
-                return new ResponseEntity<>(HttpStatus.CREATED);
+                return ResponseEntity.status(HttpStatus.CREATED).build();
+            } catch (CustomerAlreadyExistsException e) {
+                logger.warn("Customer already exists: {}", customerDTO.getCustomerId());
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
             } catch (DataPersistFailedException e) {
                 logger.error("Failed to persist customer data: {}", customerDTO.getCustomerId(), e);
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             } catch (Exception e) {
                 logger.error("Unexpected error while saving customer: {}", customerDTO.getCustomerId(), e);
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         }
     }
 
     @PatchMapping(value = "/{custId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateCustomer(@PathVariable ("custId") String custId, @RequestBody CustomerDTO customerDTO) {
-        logger.info("Received request to update customer: {}", custId);
-        if (custId == null) {
+    public ResponseEntity<Void> updateCustomer(@PathVariable ("custId") String customerId, @RequestBody CustomerDTO customerDTO) {
+        logger.info("Received request to update customer: {}", customerId);
+        if (customerId == null) {
             logger.warn("Received null customerId for update");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else {
             try {
-                customerService.updateCustomer(custId, customerDTO);
-                logger.info("Customer updated successfully: {}", custId);
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }catch(CustomerNotFoundException e){
-                logger.warn("Customer not found for update: {}", custId);
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }catch(Exception e){
-                logger.error("Unexpected error while updating customer: {}", custId, e);
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                customerService.updateCustomer(customerId, customerDTO);
+                logger.info("Customer updated successfully: {}", customerId);
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            } catch (CustomerNotFoundException e) {
+                logger.warn("Customer not found for update: {}", customerId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            } catch (Exception e) {
+                logger.error("Unexpected error while updating customer: {}", customerId, e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         }
     }
@@ -84,19 +86,36 @@ public class CustomerController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CustomerDTO> getAllCustomer(){
+    public ResponseEntity<List<CustomerDTO>> getAllCustomer(){
         logger.info("Received request to get all customers");
-        return customerService.getAllCustomers();
+        try {
+            List<CustomerDTO> allCustomers = customerService.getAllCustomers();
+            logger.info("Retrieved {} customers", allCustomers.size());
+            return ResponseEntity.ok(allCustomers);
+        } catch (Exception e) {
+            logger.error("Unexpected error while retrieving all customers", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping(value = "/{custId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CustomerResponse getCustomer(@PathVariable ("custId") String custId){
-        logger.info("Received request to search customer: {}", custId);
-        if(custId.isEmpty() || custId == null){
+    public ResponseEntity<CustomerDTO> getCustomer(@PathVariable ("custId") String customerId){
+        logger.info("Received request to search customer: {}", customerId);
+        if (customerId == null) {
             logger.warn("Received null customerId for search");
-            return new CustomerErrorResponse(1,"Not valid note id");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } else {
+            try {
+                CustomerDTO customerDTO = customerService.getCustomer(customerId);
+                logger.info("Customer found: {}", customerId);
+                return ResponseEntity.ok(customerDTO);
+            } catch (CustomerNotFoundException e) {
+                logger.warn("Customer not found: {}", customerId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            } catch (Exception e) {
+                logger.error("Unexpected error while searching for customer: {}", customerId, e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
         }
-        logger.info("Customer found: {}", custId);
-        return customerService.getCustomer(custId);
     }
 }

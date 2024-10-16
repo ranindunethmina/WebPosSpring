@@ -1,6 +1,7 @@
 package lk.ijse.webposspring.config;
 
 import jakarta.persistence.EntityManagerFactory;
+import lk.ijse.webposspring.util.ImageUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,6 +25,12 @@ public class WebAppRootConfig {
     public ModelMapper modelMapper(){
         return new ModelMapper();
     }
+
+    @Bean
+    public ImageUtil imageUtil() {
+        return new ImageUtil();
+    }
+
 
     @Bean
     public DataSource dataSource() {

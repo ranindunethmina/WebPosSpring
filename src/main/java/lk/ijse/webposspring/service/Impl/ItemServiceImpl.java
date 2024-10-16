@@ -1,74 +1,100 @@
 package lk.ijse.webposspring.service.Impl;
 
-import jakarta.transaction.Transactional;
-import lk.ijse.webposspring.customObj.Impl.ItemErrorResponse;
-import lk.ijse.webposspring.customObj.ItemResponse;
-import lk.ijse.webposspring.dao.ItemDao;
+import lk.ijse.webposspring.exception.ItemAlreadyExistsException;
+import lk.ijse.webposspring.repository.ItemRepository;
 import lk.ijse.webposspring.dto.ItemDTO;
 import lk.ijse.webposspring.entity.Item;
 import lk.ijse.webposspring.exception.DataPersistFailedException;
+import lk.ijse.webposspring.exception.ItemNotFoundException;
 import lk.ijse.webposspring.service.ItemService;
+import lk.ijse.webposspring.util.ImageUtil;
 import lk.ijse.webposspring.util.Mapping;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    @Autowired
-    private ItemDao itemDao;
+    private final ItemRepository itemRepository;
 
-    @Autowired
-    private Mapping mapping;
+    private final Mapping mapping;
+
+    private final ImageUtil imageUtil;
 
     @Override
-    public void saveItem(ItemDTO itemDTO) {
-        Item savedItem = itemDao.save(mapping.convertToItemEntity(itemDTO));
-        if (savedItem == null) {
-            throw new DataPersistFailedException("Cannot save item");
+    public void saveItem(ItemDTO<MultipartFile> itemDTO) {
+        Optional<Item> tempItem = itemRepository.findById(itemDTO.getItemId());
+        if (tempItem.isPresent()) {
+            throw new ItemAlreadyExistsException("Item already exists");
+        } else {
+            try {
+                String imageName = imageUtil.saveImage(itemDTO.getImagePath());
+                Item item = mapping.convertToItemEntity(itemDTO);
+                item.setImagePath(imageName);
+                itemRepository.save(item);
+            } catch (Exception e) {
+                throw new DataPersistFailedException("Failed to save the item");
+            }
         }
     }
 
     @Override
-    public void updateItem(ItemDTO itemDTO) {
-        Optional<Item> tmpItem = itemDao.findById(itemDTO.getItemId());
-        if (!tmpItem.isPresent()) {
-            throw new DataPersistFailedException("Item not found");
-        }else {
-            tmpItem.get().setItemName(itemDTO.getItemName());
-            tmpItem.get().setPrice(itemDTO.getPrice());
-            tmpItem.get().setQuantity(itemDTO.getQuantity());
-            tmpItem.get().setCategory(itemDTO.getCategory());
-            tmpItem.get().setImagePath(itemDTO.getImagePath());
+    public void updateItem(String itemId, ItemDTO<MultipartFile> itemDTO) {
+        Optional<Item> tempItem = itemRepository.findById(itemId);
+        if (tempItem.isPresent()) {
+            String imageName = tempItem.get().getImagePath();
+            if (!itemDTO.getImagePath().isEmpty()) {
+                imageName = imageUtil.updateImage(tempItem.get().getImagePath(), itemDTO.getImagePath());
+            }
+            tempItem.get().setItemName(itemDTO.getItemName());
+            tempItem.get().setPrice(itemDTO.getPrice());
+            tempItem.get().setQuantity(itemDTO.getQuantity());
+            tempItem.get().setCategory(itemDTO.getCategory());
+            tempItem.get().setImagePath(imageName);
+        } else {
+            throw new ItemNotFoundException("Item not found");
         }
     }
 
     @Override
     public void deleteItem(String itemId) {
-        Optional<Item> selectedItemId = itemDao.findById(itemId);
+        Optional<Item> selectedItemId = itemRepository.findById(itemId);
         if (!selectedItemId.isPresent()) {
-            throw new DataPersistFailedException("Item not found");
+            throw new ItemNotFoundException("Item not found");
         }else {
-            itemDao.deleteById(itemId);
+            imageUtil.deleteImage(selectedItemId.get().getImagePath());
+            itemRepository.deleteById(itemId);
         }
     }
 
     @Override
-    public ItemResponse getItem(String itemId) {
-        return null;
-//        if (itemDao.existsById(itemId)) {
-//            Item itemEntityByItemId = itemDao.findById(itemId);
-//            return mapping.convertToItemDTO(itemEntityByItemId);
-//        }else {
-//            return new ItemErrorResponse(0,"Item not found");
-//        }
+    public ItemDTO<String> getItem(String itemId) {
+        Optional<Item> item = itemRepository.findById(itemId);
+        if (item.isPresent()) {
+            ItemDTO<String> itemDTO = mapping.convertToItemDTO(item.get());
+            itemDTO.setImagePath(imageUtil.getImage(item.get().getImagePath()));
+            return itemDTO;
+        } else {
+            throw new ItemNotFoundException("Item not found");
+        }
     }
 
     @Override
-    public List<ItemDTO> getAllItems() {
-        return mapping.convertToItemDTO(itemDao.findAll());
-    }
+    public List<ItemDTO<String>> getAllItems() {
+        List<Item> items = itemRepository.findAll();
+        List<ItemDTO<String>> itemDTOS = mapping.convertToItemDTOList(items);
+        for (ItemDTO<String> itemDTO : itemDTOS) {
+            items.stream().filter(item ->
+                            item.getItemId().equals(itemDTO.getItemId()))
+                    .findFirst()
+                    .ifPresent(item ->
+                            itemDTO.setImagePath(imageUtil.getImage(item.getImagePath())));
+        }
+        return itemDTOS;    }
 }
