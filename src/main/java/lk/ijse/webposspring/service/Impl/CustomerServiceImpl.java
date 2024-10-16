@@ -1,11 +1,11 @@
 package lk.ijse.webposspring.service.Impl;
 
 import jakarta.transaction.Transactional;
-import lk.ijse.webposspring.customObj.CustomerErrorResponse;
+import lk.ijse.webposspring.customObj.Impl.CustomerErrorResponse;
 import lk.ijse.webposspring.customObj.CustomerResponse;
 import lk.ijse.webposspring.dao.CustomerDao;
-import lk.ijse.webposspring.dto.Impl.CustomerDTO;
-import lk.ijse.webposspring.entity.CustomerEntity;
+import lk.ijse.webposspring.dto.CustomerDTO;
+import lk.ijse.webposspring.entity.Customer;
 import lk.ijse.webposspring.exception.CustomerNotFoundException;
 import lk.ijse.webposspring.exception.DataPersistFailedException;
 import lk.ijse.webposspring.service.CustomerService;
@@ -40,7 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void updateCustomer(String customerId, CustomerDTO incomeCustomerDTO) {
-        Optional<CustomerEntity> tmpNoteEntity = customerDao.findById(customerId);
+        Optional<Customer> tmpNoteEntity = customerDao.findById(customerId);
         if (!tmpNoteEntity.isPresent()){
             throw new CustomerNotFoundException("Customer not found");
         }else {
@@ -52,7 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void deleteCustomer(String customerId) {
-        Optional<CustomerEntity> tmpNoteEntity = customerDao.findById(customerId);
+        Optional<Customer> tmpNoteEntity = customerDao.findById(customerId);
         if (!tmpNoteEntity.isPresent()){
             throw new CustomerNotFoundException("Customer not found");
         } else {

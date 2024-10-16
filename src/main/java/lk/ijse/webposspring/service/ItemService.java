@@ -1,7 +1,7 @@
 package lk.ijse.webposspring.service;
 
 import lk.ijse.webposspring.customObj.ItemResponse;
-import lk.ijse.webposspring.dto.Impl.ItemDTO;
+import lk.ijse.webposspring.dto.ItemDTO;
 
 import java.util.List;
 

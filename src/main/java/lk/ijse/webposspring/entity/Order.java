@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "`order`")
-public class OrderEntity implements SuperEntity {
+public class Order implements SuperEntity {
     @Id
     private String orderId;
     private LocalDateTime dateAndTime;
@@ -24,8 +24,8 @@ public class OrderEntity implements SuperEntity {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private CustomerEntity customer;
+    private Customer customer;
 
     @OneToMany(mappedBy = "order")
-    private List<OrderDetailEntity> orderDetails;
+    private List<OrderDetails> orderDetails;
 }

@@ -1,6 +1,5 @@
-package lk.ijse.webposspring.dto.Impl;
+package lk.ijse.webposspring.dto;
 
-import lk.ijse.webposspring.dto.SuperDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

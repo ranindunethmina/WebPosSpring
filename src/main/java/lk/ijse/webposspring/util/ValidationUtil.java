@@ -1,9 +1,9 @@
 package lk.ijse.webposspring.util;
 
-import lk.ijse.webposspring.dto.Impl.CustomerDTO;
-import lk.ijse.webposspring.dto.Impl.ItemDTO;
-import lk.ijse.webposspring.dto.Impl.OrderDTO;
-import lk.ijse.webposspring.dto.Impl.OrderDetailDTO;
+import lk.ijse.webposspring.dto.CustomerDTO;
+import lk.ijse.webposspring.dto.ItemDTO;
+import lk.ijse.webposspring.dto.OrderDTO;
+import lk.ijse.webposspring.dto.OrderDetailDTO;
 
 import java.util.ArrayList;
 import java.util.List;

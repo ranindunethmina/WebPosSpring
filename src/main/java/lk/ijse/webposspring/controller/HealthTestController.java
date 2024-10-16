@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthTestController {
     @GetMapping
     public String healthTest(){
-        return "Controller run successfully";
+        return "Pos System API is running successfully";
     }
 }

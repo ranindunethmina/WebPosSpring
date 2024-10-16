@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "item")
-public class ItemEntity implements SuperEntity {
+public class Item implements SuperEntity {
     @Id
     private String itemId;
     private String itemName;
@@ -23,5 +23,5 @@ public class ItemEntity implements SuperEntity {
     private String imagePath;
 
     @OneToMany(mappedBy = "item")
-    private List<OrderDetailEntity> orderDetails;
+    private List<OrderDetails> orderDetails;
 }

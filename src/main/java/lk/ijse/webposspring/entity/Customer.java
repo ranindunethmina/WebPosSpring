@@ -1,20 +1,24 @@
-package lk.ijse.webposspring.dto.Impl;
+package lk.ijse.webposspring.entity;
 
-import lk.ijse.webposspring.customObj.CustomerResponse;
-import lk.ijse.webposspring.dto.SuperDTO;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerDTO implements SuperDTO, CustomerResponse {
+@Data
+@Entity
+@Table(name = "customer")
+public class Customer implements SuperEntity {
+    @Id
     private String customerId;
     private String firstName;
     private String address;
     private String mobile;
-    private List<String> orderIds;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orders;
 }

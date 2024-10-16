@@ -1,11 +1,13 @@
 package lk.ijse.webposspring.controller;
 
 import lk.ijse.webposspring.customObj.ItemResponse;
-import lk.ijse.webposspring.dto.Impl.ItemDTO;
+import lk.ijse.webposspring.dto.ItemDTO;
 import lk.ijse.webposspring.exception.DataPersistFailedException;
 import lk.ijse.webposspring.service.ItemService;
 import lk.ijse.webposspring.util.AppUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,9 +20,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/item")
 @RequiredArgsConstructor
+@CrossOrigin
 public class ItemController {
     @Autowired
-    private final ItemService itemService;
+    private ItemService itemService;
+
+    Logger logger = LoggerFactory.getLogger(ItemController.class);
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> saveItem(
@@ -29,8 +34,9 @@ public class ItemController {
             @RequestPart("price") double price,
             @RequestPart("quantity") int quantity,
             @RequestPart("category") String category,
-            @RequestPart("imagePath") MultipartFile imagePath)
-    {
+            @RequestPart("imagePath") MultipartFile imagePath) {
+        logger.info("Request to save customer.");
+
         try{
             byte[] imageByteCollection = imagePath.getBytes();
             String base64ProfilePic = AppUtil.toBase64ProfilePic(imageByteCollection);
@@ -44,6 +50,7 @@ public class ItemController {
             buildItemDTO.setImagePath(base64ProfilePic);
 
             itemService.saveItem(buildItemDTO);
+            logger.info("Successfully saved item: {}", buildItemDTO);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (DataPersistFailedException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -51,8 +58,10 @@ public class ItemController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@PathVariable("id") String itemId) {
+        logger.info("Request to delete item {}", itemId);
         try {
             itemService.deleteItem(itemId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -62,14 +71,19 @@ public class ItemController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping(value = "/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ItemResponse getItem(@PathVariable("id") String itemId) {
+        logger.info("Request to get item {}", itemId);
         return itemService.getItem(itemId);
     }
+
     @GetMapping(value = "allItems", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemDTO> getAllItems() {
+        logger.info("Request to get all items");
         return itemService.getAllItems();
     }
+
     @PatchMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateItem(
             @RequestPart("updateItemId") String updateItemId,

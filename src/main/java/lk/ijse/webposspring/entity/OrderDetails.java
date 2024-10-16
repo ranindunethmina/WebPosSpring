@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "orderDetail")
-public class OrderDetailEntity implements SuperEntity {
+public class OrderDetails implements SuperEntity {
     @Id
 //    private String orderId;
 //    private String itemId;
@@ -19,9 +19,9 @@ public class OrderDetailEntity implements SuperEntity {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
-    private OrderEntity order;
+    private Order order;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
-    private ItemEntity item;
+    private Item item;
 }

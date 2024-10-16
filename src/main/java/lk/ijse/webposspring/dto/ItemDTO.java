@@ -1,6 +1,6 @@
-package lk.ijse.webposspring.dto.Impl;
+package lk.ijse.webposspring.dto;
 
-import lk.ijse.webposspring.dto.SuperDTO;
+import lk.ijse.webposspring.customObj.ItemResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDTO implements SuperDTO {
+public class ItemDTO implements SuperDTO, ItemResponse {
     private String itemId;
     private String itemName;
     private double price;
