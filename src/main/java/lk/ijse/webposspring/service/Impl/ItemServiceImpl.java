@@ -96,5 +96,6 @@ public class ItemServiceImpl implements ItemService {
                     .ifPresent(item ->
                             itemDTO.setImagePath(imageUtil.getImage(item.getImagePath())));
         }
-        return itemDTOS;    }
+        return itemDTOS;
+    }
 }

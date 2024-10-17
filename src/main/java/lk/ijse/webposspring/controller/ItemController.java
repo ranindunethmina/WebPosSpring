@@ -49,12 +49,13 @@ public class ItemController {
     }
 
     @PatchMapping(path = "/{itemId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateItem(@PathVariable("itemId") String itemId,
-                                           @RequestPart("itemName") String itemName,
-                                           @RequestPart("price") String price,
-                                           @RequestPart("quantity") String quantity,
-                                           @RequestPart("category") String category,
-                                           @RequestPart("image") MultipartFile image
+    public ResponseEntity<Void> updateItem(
+            @PathVariable("itemId") String itemId,
+            @RequestPart("itemName") String itemName,
+            @RequestPart("price") String price,
+            @RequestPart("quantity") String quantity,
+            @RequestPart("category") String category,
+            @RequestPart("image") MultipartFile image
     ) {
         logger.info("Received request to update item: {}", itemId);
         try {

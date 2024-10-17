@@ -10,7 +10,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Data
 public class OrderDetailDTO implements Serializable {
-    private String orderId;
     private String itemId;
     private int quantity;
     private double price;

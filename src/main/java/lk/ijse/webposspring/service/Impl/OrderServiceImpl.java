@@ -38,15 +38,11 @@ public class OrderServiceImpl implements OrderService {
         if (customer.isEmpty()) {
             throw new CustomerNotFoundException("Customer not found");
         }
-
-        //Create New Order
         Order newOrder = createOrder(orderDTO, customer.get());
 
-        //Update items and convert Order DTOs to Entities
         Set<OrderDetail> orderDetails = saveOrderDetailsAndUpdateItems(newOrder, orderDTO.getOrderDetails());
         newOrder.setOrderDetails(orderDetails);
 
-        //Save Order
         saveOrder(newOrder);
     }
 
@@ -60,7 +56,6 @@ public class OrderServiceImpl implements OrderService {
         orders.setDiscount(orderDTO.getDiscount());
         return orders;
     }
-
 
     private void saveOrder(Order orders) {
         try {
@@ -78,7 +73,6 @@ public class OrderServiceImpl implements OrderService {
                 throw new ItemNotFoundException("Item not found");
             }
 
-            //Update the quantity
             item.get().setQuantity(item.get().getQuantity() - orderDetailDto.getQuantity());
 
             OrderDetailsId orderDetailsId = new OrderDetailsId(orders.getOrderId(), item.get().getItemId());

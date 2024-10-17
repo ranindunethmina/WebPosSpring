@@ -29,6 +29,7 @@ public class ImageUtil {
             }
         }
     }
+
     public String getImage(String itemId) {
         try {
             Optional<Path> resource = searchImage(itemId);
@@ -53,7 +54,6 @@ public class ImageUtil {
             throw new RuntimeException(e);
         }
     }
-
 
     private Optional<Path> searchImage(String itemId) {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(IMAGE_DIRECTORY, itemId + ".*")) {

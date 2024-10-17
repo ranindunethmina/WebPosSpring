@@ -58,7 +58,7 @@ public class OrderController {
         }
     }
 
-    @GetMapping(path = "/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderDTO> searchOrder(@PathVariable("orderId") String orderId) {
         logger.info("Received request to search order: {}", orderId);
         try {
@@ -74,7 +74,7 @@ public class OrderController {
         }
     }
 
-    @GetMapping(path = "/allOrders", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/allOrders", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<OrderDTO>> getAllOrders() {
         logger.info("Received request to get all orders");
         try {

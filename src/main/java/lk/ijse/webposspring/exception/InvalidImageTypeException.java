@@ -8,4 +8,5 @@ public class InvalidImageTypeException extends RuntimeException {
     public InvalidImageTypeException(String message, Throwable cause) {
         super(message, cause);
     }
+
 }

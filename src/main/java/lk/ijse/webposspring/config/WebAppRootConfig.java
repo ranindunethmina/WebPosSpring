@@ -31,7 +31,6 @@ public class WebAppRootConfig {
         return new ImageUtil();
     }
 
-
     @Bean
     public DataSource dataSource() {
         var dmds = new DriverManagerDataSource();

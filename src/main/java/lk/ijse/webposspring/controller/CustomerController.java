@@ -1,7 +1,6 @@
 package lk.ijse.webposspring.controller;
 
 import lk.ijse.webposspring.dto.CustomerDTO;
-import lk.ijse.webposspring.exception.CustomerAlreadyExistsException;
 import lk.ijse.webposspring.exception.CustomerNotFoundException;
 import lk.ijse.webposspring.exception.DataPersistFailedException;
 import lk.ijse.webposspring.service.CustomerService;
@@ -35,9 +34,6 @@ public class CustomerController {
                 customerService.saveCustomer(customerDTO);
                 logger.info("Customer saved successfully: {}", customerDTO.getCustomerId());
                 return ResponseEntity.status(HttpStatus.CREATED).build();
-            } catch (CustomerAlreadyExistsException e) {
-                logger.warn("Customer already exists: {}", customerDTO.getCustomerId());
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
             } catch (DataPersistFailedException e) {
                 logger.error("Failed to persist customer data: {}", customerDTO.getCustomerId(), e);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

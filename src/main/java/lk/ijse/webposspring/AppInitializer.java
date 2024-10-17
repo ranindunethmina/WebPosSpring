@@ -27,4 +27,5 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
         String tempDir = System.getProperty("java.io.tmpdir");
         registration.setMultipartConfig(new MultipartConfigElement(tempDir));
     }
+
 }
